@@ -3,6 +3,8 @@ import argparse
 import numpy as np
 from keras.models import model_from_json
 from keras.preprocessing import image
+import url
+
 
 # Parse the arguments
 ap = argparse.ArgumentParser()
@@ -13,7 +15,9 @@ args = vars(ap.parse_args())
 json_file = open('top_models\\fer.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
-model = model_from_json(loaded_model_json)
+
+##kerasとtensorflowのバージョンの問題
+model = model_from_json(loaded_model_json) ##problem
 
 # Load weights and them to model
 model.load_weights('top_models\\fer.h5')
@@ -21,6 +25,7 @@ model.load_weights('top_models\\fer.h5')
 classifier = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 img = cv2.imread(args['image'])
+print(args['image'])
 gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 faces_detected = classifier.detectMultiScale(gray_img, 1.18, 5)
 
@@ -38,6 +43,7 @@ for (x, y, w, h) in faces_detected:
     emotions = ['neutral', 'happiness', 'surprise', 'sadness', 'anger', 'disgust', 'fear']
     predicted_emotion = emotions[max_index]
 
+    url.youtube_url(predicted_emotion)
     cv2.putText(img, predicted_emotion, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2)
 
 resized_img = cv2.resize(img, (1024, 768))
